@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <title>A biodiversity dataset graph</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+  <body>
+    <p>A biodiversity dataset graph: <a href="http://localhost:4000">http://localhost:4000</a>. 2021. <a href="data/5d/4e/5d4e965b8a8447da9ab408f027b1e7fbca5f8076b62caad0943fcefba413b323">hash://sha256/5d4e965b8a8447da9ab408f027b1e7fbca5f8076b62caad0943fcefba413b323</a></p>
+
+<p>Created using <a href="https://preston.guoda.bio">Preston</a> v0.2.3 on 2021-03-08T13:21:40.790Z.</p>
+
+<h2 id="welcome">Welcome!</h2>
+
+<p>Are you looking for a way to have fast, local access to iDigBio indexed records and media?</p>
+
+<p>Would you like to have an <em>exact</em> copy of the images in your research dataset?</p>
+
+<p>Do you want to include latest research data while keeping your original data around?</p>
+
+<p>Would you like to help preserve some (or all) of iDigBio’s images and their associated specimen data?</p>
+
+<h3 id="introducing-content-based-idigbio">Introducing Content-based iDigBio.</h3>
+
+<p>This automatically generated website contains a versioned archive of a custom selection of specimen records and associated media. The selection is made using the <a href="https://www.idigbio.org/wiki/index.php/IDigBio_API">iDigBio Search API</a>, a powerful search engine powered by Elastic Search that contains over 130M vouchered specimen records. The data is archived using <a href="https://github.com/bio-guoda/preston">Preston</a>, a biodiversity data tracker that can version entire biodiversity dataset networks. Finally, the website is generated from the archived content using <a href="https://jekyllrb.com/">Jekyll</a>, the static site generator that powers GitHub pages.</p>
+
+<p><a href="assets/preston.dot.svg"><img src="assets/preston.dot.svg" style="height: 30em;" /></a></p>
+
+<h3 id="archive-idigbio-indexed-content">Archive iDigBio-indexed content</h3>
+
+<p>This biodiversity data archive website was created with the following steps:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># first, create a new blank jekyll site (tested on Jekyll v4.0.1)
+jekyll new [site_dir] --blank 
+
+cd [site_dir]
+
+# archive 10 iDigBio indexed Andrenidae records and related images
+preston track "https://api.gbif.org/v1/occurrence/search?dataset_key=7931dcab-94f1-46ce-8092-56e4335423de&amp;taxon_key=8557082&amp;taxon_key=1032837" 
+
+# generate Jekyll site for archived content
+preston copyTo --type jekyll . 
+
+# launch website and visit http://localhost:4000 in your browser
+jekyll s 
+</code></pre></div></div>
+
+<h3 id="clone-data">Clone data</h3>
+
+<p>You can clone an exact copy of the entire biodiversity data archive using:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>preston clone "http://localhost:4000/data"
+</code></pre></div></div>
+
+<h3 id="programmatic-access">Programmatic access</h3>
+
+<p>Also, you can query the idigbio records available through this site via the api at <a href="http://localhost:4000/data.json">http://localhost:4000/data.json</a>. With this, you can programmatically access the data and select the records you are interested in. For instance, you can show the first record by executing:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl "http://localhost:4000/data.json" | jq -c 'select(.type == "records")' | head -n1 
+[] 
+
+</code></pre></div></div>
+
+<p>Or, use <a href="https://stedolan.github.io/jq">jq</a> to select the records with scientific name matching <em>Liphanthus sabulosus</em>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -s "http://localhost:4000/data.json" | jq -c 'select(.data["dwc:scientificName"] == "Liphanthus sabulosus")' 
+</code></pre></div></div>
+
+<h3 id="updating">Updating</h3>
+
+<p>Many natural history collections are actively digitizing their collections. These collections are actively indexed by iDigBio as the new data records and media become available. This website can be updated to incorporate newly added or updated data by:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd [site_dir]
+
+# archive records and related images with criteria specified in the iDigBio search API
+preston update "https://api.gbif.org/v1/occurrence/search?dataset_key=7931dcab-94f1-46ce-8092-56e4335423de&amp;taxon_key=8557082&amp;taxon_key=1032837"
+
+# update Jekyll site with archived content
+preston copyTo --type jekyll .
+</code></pre></div></div>
+
+<h3 id="what-is-in-this-archive">What is in this archive?</h3>
+
+<p>This archived dataset includes 0 specimen records and 0 media records.</p>
+
+<p>The first 10 records and their associated media included in this data archive are:</p>
+
+<div style="display: flex; flex-direction: column; row-gap: 2em;"></div>
+
+    <code id="idigbio-meta" style="white-space: pre-line; white-space: pre-wrap;"></code>
+  </body>
+
+  <script>
+    var year = document.getElementById("year");
+    if (year) {
+      year.textContent=new Date().getFullYear();
+    }
+
+    document.querySelectorAll(".meta").forEach(function(metaElem) {
+      var uuid = metaElem.getAttribute("id");
+      var obj = JSON.parse(decodeURIComponent(uuid));
+      var pretty_json = JSON.stringify(obj, null, 2);  // Pretty-printed JSON (indented 2 spaces).
+      metaElem.textContent = pretty_json;
+      metaElem.style = "white-space: pre-line; white-space: pre-wrap; font-size: 0.8em;";
+    });
+  </script>
+
+</html>
